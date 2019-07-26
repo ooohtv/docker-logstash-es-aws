@@ -1,12 +1,9 @@
-FROM logstash
+FROM docker.elastic.co/logstash/logstash:7.2.0
 
-MAINTAINER Miguel Angel Guillen
+RUN bin/logstash-plugin install logstash-output-amazon_es
 
-RUN plugin install logstash-output-amazon_es
-RUN apt-get update && apt-get -y install gettext-base && apt-get clean 
-COPY logstash.conf /config-dir/logstash.tpl.conf
-COPY launcher.sh /config-dir/
+COPY logstash.yml /usr/share/logstash/config/
+COPY logstash.conf /usr/share/logstash/pipeline/
+ADD launcher.sh /tmp
 
-EXPOSE 5000/udp
-
-CMD ["/config-dir/launcher.sh"]
+CMD /bin/sh /tmp/launcher.sh

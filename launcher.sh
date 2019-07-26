@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-# Replace the environment variables with the proper values
-envsubst < /config-dir/logstash.tpl.conf > /config-dir/logstash.conf
+# Hack the substition of the ES_HOST variable into the configuration to work around a logstash bug.
+# All other environment variable substitutions work as expected
+sed -i"" "s/\${ES_HOST}/$ES_HOST/" /usr/share/logstash/pipeline/logstash.conf
 
-# Execute logstash and get PID 1
-exec logstash -f /config-dir/logstash.conf
+# Run logstash as normal with the hacked configuration
+exec logstash -f /usr/share/logstash/pipeline/logstash.conf
